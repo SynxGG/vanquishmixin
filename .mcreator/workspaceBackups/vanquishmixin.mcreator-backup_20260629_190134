@@ -1,0 +1,141 @@
+{
+  "mod_elements": [
+    {
+      "name": "Workstation",
+      "type": "gui",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "workstation",
+      "metadata": {
+        "files": [
+          "src/main/java/vanquishmixin/client/gui/WorkstationScreen.java",
+          "src/main/java/vanquishmixin/network/WorkstationSlotMessage.java",
+          "src/main/java/vanquishmixin/world/inventory/WorkstationMenu.java"
+        ]
+      }
+    },
+    {
+      "name": "WorkstationBlock",
+      "type": "block",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "workstation_block",
+      "metadata": {
+        "files": [
+          "src/main/java/vanquishmixin/block/WorkstationBlockBlock.java",
+          "src/main/resources/data/vanquishmixin/loot_tables/blocks/workstation_block.json",
+          "src/main/resources/assets/vanquishmixin/blockstates/workstation_block.json",
+          "src/main/resources/assets/vanquishmixin/models/item/workstation_block.json",
+          "src/main/resources/assets/vanquishmixin/models/block/workstation_block.json"
+        ]
+      }
+    },
+    {
+      "name": "VQAdvancedCrafting",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "vq_advanced_crafting",
+      "metadata": {
+        "files": [
+          "src/main/java/vanquishmixin/VQAdvancedCrafting.java"
+        ]
+      }
+    },
+    {
+      "name": "VQUpdateCraftingOutput",
+      "type": "procedure",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "vq_update_crafting_output",
+      "metadata": {
+        "dependencies": [
+          {
+            "name": "entity",
+            "type": "entity"
+          }
+        ],
+        "files": [
+          "src/main/java/vanquishmixin/procedures/VQUpdateCraftingOutputProcedure.java"
+        ]
+      }
+    },
+    {
+      "name": "VQTakeCraftingOutput",
+      "type": "procedure",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "vq_take_crafting_output",
+      "metadata": {
+        "dependencies": [
+          {
+            "name": "entity",
+            "type": "entity"
+          }
+        ],
+        "files": [
+          "src/main/java/vanquishmixin/procedures/VQTakeCraftingOutputProcedure.java"
+        ]
+      }
+    },
+    {
+      "name": "VQJeiPlugin",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "vq_jei_plugin",
+      "metadata": {
+        "files": [
+          "src/main/java/vanquishmixin/VQJeiPlugin.java"
+        ]
+      }
+    }
+  ],
+  "variable_elements": [],
+  "sound_elements": [],
+  "tag_elements": {},
+  "tab_element_order": {},
+  "language_map": {
+    "en_us": {
+      "gui.vanquishmixin.workstation.label_crafting": "Crafting",
+      "block.vanquishmixin.workstation_block": "Workstation"
+    }
+  },
+  "metadata": {
+    "files": [
+      "src/main/java/vanquishmixin/init/VanquishmixinModMenus.java",
+      "src/main/java/vanquishmixin/init/VanquishmixinModScreens.java",
+      "src/main/java/vanquishmixin/network/MenuStateUpdateMessage.java",
+      "src/main/java/vanquishmixin/init/VanquishmixinModBlocks.java",
+      "src/main/java/vanquishmixin/init/VanquishmixinModItems.java",
+      "src/main/java/vanquishmixin/VanquishmixinMod.java",
+      "src/main/resources/pack.mcmeta",
+      "src/main/resources/META-INF/mods.toml",
+      "src/main/java/vanquishmixin/init/VanquishmixinModTabs.java"
+    ]
+  },
+  "foldersRoot": {
+    "name": "~",
+    "children": []
+  },
+  "workspaceSettings": {
+    "modid": "vanquishmixin",
+    "modName": "VanquishMixin",
+    "version": "1.0.0",
+    "author": "synx",
+    "websiteURL": "https://curseforge.com",
+    "license": "Not specified",
+    "serverSideOnly": false,
+    "requiredMods": [
+      "immersive_armors",
+      "cataclysm"
+    ],
+    "dependencies": [],
+    "dependants": [],
+    "mcreatorDependencies": [],
+    "currentGenerator": "forge-1.20.1",
+    "credits": "Addon for the Vanquish Modpack ",
+    "modElementsPackage": "vanquishmixin"
+  },
+  "mcreatorVersion": 202600114619
+}

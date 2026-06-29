@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "vanquishmixin:block/workstation_bottom",
+    "up": "vanquishmixin:block/workstation_top",
+    "north": "vanquishmixin:block/workstation_front",
+    "east": "vanquishmixin:block/workstation_side_2",
+    "south": "vanquishmixin:block/workstation_side_2",
+    "west": "vanquishmixin:block/workstation_side_2",
+    "particle": "vanquishmixin:block/workstation_bottom"
+  },
+  "render_type": "solid"
+}

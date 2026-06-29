@@ -1,0 +1,125 @@
+plugins {
+    id 'eclipse'
+    id 'net.neoforged.moddev.legacyforge' version '2.0.141'
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+version = '1.0'
+base.archivesName = "modid"
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+legacyForge {
+    version = "1.20.1-47.4.20"
+
+    runs {
+        client {
+            client()
+
+            def mcreatorJvmOptions = System.getenv('MCREATOR_JVM_OPTIONS')
+            if (mcreatorJvmOptions) {
+                mcreatorJvmOptions.split("\\s+").findAll { it.trim() }.each { arg ->
+                    jvmArgument(arg)
+                }
+            }
+        }
+        server {
+            server()
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        mcreator {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+mixin {
+    if (file("src/main/resources/vanquishmixin.mixins.json").exists()) {
+        add sourceSets.main, "vanquishmixin.refmap.json"
+        config "vanquishmixin.mixins.json"
+    }
+}
+
+dependencies {
+    // Dépendances MCreator / Mixins
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.0"))
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    // Mods externes locaux remappés pour l'environnement de développement
+    modImplementation 'local:curios:5.14.1'
+    modImplementation 'local:lionfishapi:3.0'
+    modImplementation 'local:cataclysm:3.31'
+    modImplementation 'local:immersive_armors:1.7.2'
+
+    // Facultatif, mais utile pour tester JEI
+    modImplementation 'local:jei:15.20.0.132'
+}
+
+jar {
+    if (file("src/main/resources/vanquishmixin.mixins.json").exists()) {
+        manifest.attributes([
+                "MixinConfigs": "vanquishmixin.mixins.json"
+        ])
+    }
+}
+
+apply from: 'mcreator.gradle'
+
+def vanquishModsDirectory = file(
+    "C:/Users/elist/curseforge/minecraft/Instances/Vanquish/mods"
+)
+
+tasks.register("deployToVanquish", Copy) {
+    dependsOn tasks.named("build")
+
+    from(layout.buildDirectory.dir("libs")) {
+        include "*.jar"
+
+        exclude "*-sources.jar"
+        exclude "*-javadoc.jar"
+        exclude "*-dev.jar"
+    }
+
+    into vanquishModsDirectory
+
+    rename { String fileName ->
+        "vanquishmixin-dev.jar"
+    }
+
+    doFirst {
+        if (!vanquishModsDirectory.exists()) {
+            vanquishModsDirectory.mkdirs()
+        }
+
+        delete new File(
+            vanquishModsDirectory,
+            "vanquishmixin-dev.jar"
+        )
+    }
+
+    doLast {
+        println ""
+        println "=========================================="
+        println "Vanquish Mixin deployed to:"
+        println vanquishModsDirectory
+        println "=========================================="
+        println ""
+    }
+}

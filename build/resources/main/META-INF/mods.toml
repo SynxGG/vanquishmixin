@@ -1,0 +1,39 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="Not specified"
+
+[[mods]]
+modId="vanquishmixin"
+version="1.0.0"
+displayName="VanquishMixin"
+displayURL="https://curseforge.com"
+credits="Addon for the Vanquish Modpack "
+authors="synx"
+
+# Start of user code block mod configuration
+# End of user code block mod configuration
+
+[[dependencies.vanquishmixin]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1]"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.vanquishmixin]]
+    modId="immersive_armors"
+    mandatory=true
+    versionRange="[0,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.vanquishmixin]]
+    modId="cataclysm"
+    mandatory=true
+    versionRange="[0,)"
+    ordering="NONE"
+    side="BOTH"
+
+
+
+# Start of user code block dependencies configuration
+# End of user code block dependencies configuration
