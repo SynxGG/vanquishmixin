@@ -1,6 +1,6 @@
 package vanquishmixin.world.inventory;
 
-import vanquishmixin.network.WorkstationSlotMessage;
+import vanquishmixin.VQAdvancedCrafting;
 
 import vanquishmixin.init.VanquishmixinModMenus;
 
@@ -336,6 +336,16 @@ public class WorkstationMenu extends AbstractContainerMenu implements Vanquishmi
 
 	@Override
 	public void removed(Player playerIn) {
+		/*
+ * Le résultat du slot 9 est virtuel.
+ * Il ne doit jamais être rendu au joueur à la fermeture.
+ */
+if (
+    this.world != null
+    && !this.world.isClientSide()
+) {
+    VQAdvancedCrafting.clearOutput(this);
+}
 		super.removed(playerIn);
 		if (!bound && playerIn instanceof ServerPlayer serverPlayer) {
 			if (!serverPlayer.isAlive() || serverPlayer.hasDisconnected()) {
@@ -354,12 +364,40 @@ public class WorkstationMenu extends AbstractContainerMenu implements Vanquishmi
 		}
 	}
 
-	private void slotChanged(int slotid, int ctype, int meta) {
-		if (this.world != null && this.world.isClientSide()) {
-			VanquishmixinMod.PACKET_HANDLER.sendToServer(new WorkstationSlotMessage(slotid, x, y, z, ctype, meta));
-			WorkstationSlotMessage.handleSlotAction(entity, slotid, ctype, meta, x, y, z);
-		}
-	}
+private void slotChanged(int slotid, int ctype, int meta) {
+    /*
+     * Le menu client reçoit aussi des setChanged().
+     * Toute la logique de craft reste exclusivement serveur.
+     */
+    if (
+        this.world == null
+        || this.world.isClientSide()
+    ) {
+        return;
+    }
+
+    /*
+     * Modification d'un des neuf inputs.
+     */
+    if (
+        ctype == 0
+        && slotid >= 0
+        && slotid <= 8
+    ) {
+        VQAdvancedCrafting.updateOutput(this);
+        return;
+    }
+
+    /*
+     * Retrait du résultat.
+     */
+    if (
+        ctype == 1
+        && slotid == 9
+    ) {
+        VQAdvancedCrafting.takeOutput(this);
+    }
+}
 
 	@Override
 	public Map<Integer, Slot> getSlots() {

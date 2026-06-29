@@ -4,7 +4,7 @@
       "name": "Workstation",
       "type": "gui",
       "compiles": true,
-      "locked_code": true,
+      "locked_code": false,
       "registry_name": "workstation",
       "metadata": {
         "files": [
@@ -77,6 +77,18 @@
           "src/main/java/vanquishmixin/procedures/VQTakeCraftingOutputProcedure.java"
         ]
       }
+    },
+    {
+      "name": "VQJeiPlugin",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "vq_jei_plugin",
+      "metadata": {
+        "files": [
+          "src/main/java/vanquishmixin/VQJeiPlugin.java"
+        ]
+      }
     }
   ],
   "variable_elements": [],
@@ -111,6 +123,7 @@
     "modName": "VanquishMixin",
     "version": "1.0.0",
     "author": "synx",
+    "websiteURL": "https://curseforge.com",
     "license": "Not specified",
     "serverSideOnly": false,
     "requiredMods": [
@@ -121,6 +134,7 @@
     "dependants": [],
     "mcreatorDependencies": [],
     "currentGenerator": "forge-1.20.1",
+    "credits": "Addon for the Vanquish Modpack ",
     "modElementsPackage": "vanquishmixin"
   },
   "mcreatorVersion": 202600114619
