@@ -89,30 +89,26 @@ def vanquishModsDirectory = file(
 tasks.register("deployToVanquish", Copy) {
     dependsOn tasks.named("build")
 
-    from(layout.buildDirectory.dir("libs")) {
-        include "*.jar"
-
-        exclude "*-sources.jar"
-        exclude "*-javadoc.jar"
-        exclude "*-dev.jar"
-    }
+    /*
+     * Prend uniquement le véritable JAR produit par la tâche jar,
+     * au lieu de récupérer tous les fichiers présents dans build/libs.
+     */
+    from(
+        tasks.named("jar").flatMap {
+            it.archiveFile
+        }
+    )
 
     into vanquishModsDirectory
 
-    rename { String fileName ->
+    /*
+     * Toujours le même nom dans le modpack :
+     * l'ancienne version est remplacée lors de la copie.
+     */
+    rename {
         "vanquishmixin-dev.jar"
     }
-
-    doFirst {
-        if (!vanquishModsDirectory.exists()) {
-            vanquishModsDirectory.mkdirs()
-        }
-
-        delete new File(
-            vanquishModsDirectory,
-            "vanquishmixin-dev.jar"
-        )
-    }
+}
 
     doLast {
         println ""
