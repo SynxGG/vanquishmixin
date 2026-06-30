@@ -83,38 +83,44 @@ jar {
 apply from: 'mcreator.gradle'
 
 def vanquishModsDirectory = file(
-    "C:/Users/elist/curseforge/minecraft/Instances/Vanquish/mods"
+    "C:/Users/elist/curseforge/minecraft/Instances/Vanquish (dev)/mods"
 )
 
+/*
+ * Nom du véritable JAR reobfusqué produit dans build/libs.
+ */
+def vanquishReleaseJarName =
+    "${base.archivesName.get()}-${project.version}.jar"
+
 tasks.register("deployToVanquish", Copy) {
-    dependsOn tasks.named("build")
+    /*
+     * Indispensable pour Forge 1.20.1 :
+     * transforme les noms Mojmap de développement en noms SRG
+     * utilisables dans une vraie instance Minecraft.
+     */
+    dependsOn tasks.named("reobfJar")
 
     /*
-     * Prend uniquement le véritable JAR produit par la tâche jar,
-     * au lieu de récupérer tous les fichiers présents dans build/libs.
+     * Le JAR reobfusqué est placé dans build/libs.
+     * Ne pas copier directement la sortie de la tâche jar.
      */
     from(
-        tasks.named("jar").flatMap {
-            it.archiveFile
-        }
+        layout.buildDirectory.file(
+            "libs/${vanquishReleaseJarName}"
+        )
     )
 
     into vanquishModsDirectory
 
-    /*
-     * Toujours le même nom dans le modpack :
-     * l'ancienne version est remplacée lors de la copie.
-     */
     rename {
         "vanquishmixin-dev.jar"
     }
-}
 
     doLast {
         println ""
         println "=========================================="
-        println "Vanquish Mixin deployed to:"
-        println vanquishModsDirectory
+        println "Vanquish Mixin reobfuscated and deployed"
+        println "Destination: ${vanquishModsDirectory}"
         println "=========================================="
         println ""
     }
