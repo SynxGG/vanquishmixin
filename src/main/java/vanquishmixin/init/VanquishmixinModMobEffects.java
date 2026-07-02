@@ -3,6 +3,8 @@
  */
 package vanquishmixin.init;
 
+import vanquishmixin.potion.AberrationEffectMobEffect;
+
 import vanquishmixin.VanquishmixinMod;
 
 import net.minecraftforge.registries.RegistryObject;

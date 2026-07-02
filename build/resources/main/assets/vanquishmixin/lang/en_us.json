@@ -1,4 +1,5 @@
 {
   "gui.vanquishmixin.workstation.label_crafting": "Crafting",
-  "block.vanquishmixin.workstation_block": "Workstation"
+  "block.vanquishmixin.workstation_block": "Workstation",
+  "effect.vanquishmixin.aberration_effect": "Aberration"
 }
