@@ -1,0 +1,21 @@
+{
+  "_fv": 85,
+  "_type": "potioneffect",
+  "definition": {
+    "effectName": "Aberration",
+    "icon": "aberration",
+    "color": {
+      "value": -13434829,
+      "falpha": 0.0
+    },
+    "onAddedSound": {
+      "value": ""
+    },
+    "isInstant": false,
+    "mobEffectCategory": "HARMFUL",
+    "renderStatusInInventory": true,
+    "renderStatusInHUD": true,
+    "isCuredbyHoney": false,
+    "modifiers": []
+  }
+}

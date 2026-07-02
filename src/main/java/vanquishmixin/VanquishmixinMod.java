@@ -1,6 +1,7 @@
 package vanquishmixin;
 
 import vanquishmixin.init.VanquishmixinModTabs;
+import vanquishmixin.init.VanquishmixinModMobEffects;
 import vanquishmixin.init.VanquishmixinModMenus;
 import vanquishmixin.init.VanquishmixinModItems;
 import vanquishmixin.init.VanquishmixinModBlocks;
@@ -47,6 +48,7 @@ public class VanquishmixinMod {
 		VanquishmixinModBlocks.REGISTRY.register(bus);
 		VanquishmixinModItems.REGISTRY.register(bus);
 		VanquishmixinModTabs.REGISTRY.register(bus);
+		VanquishmixinModMobEffects.REGISTRY.register(bus);
 		VanquishmixinModMenus.REGISTRY.register(bus);
 		// Start of user code block mod init
 		// End of user code block mod init
