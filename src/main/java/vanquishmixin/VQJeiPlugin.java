@@ -17,15 +17,18 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @JeiPlugin
@@ -37,19 +40,22 @@ public final class VQJeiPlugin implements IModPlugin {
 			"jei_plugin"
 		);
 
-	private static final String ANCIENT_METAL =
-		"cataclysm:ancient_metal_ingot";
-
 	/*
-	 * Type de recette personnalisé reconnu par JEI.
+	 * Type JEI de la catégorie graphique.
+	 *
+	 * Il représente les mêmes objets Recipe que ceux
+	 * utilisés par VQAdvancedCrafting.
 	 */
-	public static final RecipeType<WorkstationJeiRecipe>
-		WORKSTATION_RECIPE_TYPE =
-			RecipeType.create(
-				VanquishmixinMod.MODID,
-				"workstation",
-				WorkstationJeiRecipe.class
-			);
+	public static final RecipeType<
+		VQWorkstationRecipes.WorkstationRecipe
+	> WORKSTATION_RECIPE_TYPE =
+		RecipeType.create(
+			VanquishmixinMod.MODID,
+			"workstation",
+			VQWorkstationRecipes
+				.WorkstationRecipe
+				.class
+		);
 
 	public VQJeiPlugin() {
 		System.out.println(
@@ -64,7 +70,7 @@ public final class VQJeiPlugin implements IModPlugin {
 
 	/*
 	 * ============================================================
-	 * CATÉGORIE JEI
+	 * CATÉGORIE
 	 * ============================================================
 	 */
 
@@ -72,23 +78,25 @@ public final class VQJeiPlugin implements IModPlugin {
 	public void registerCategories(
 		IRecipeCategoryRegistration registration
 	) {
-		System.out.println(
-			"[VQ JEI] Enregistrement catégorie Workstation"
-		);
-
 		IGuiHelper guiHelper =
 			registration
 				.getJeiHelpers()
 				.getGuiHelper();
 
 		registration.addRecipeCategories(
-			new WorkstationRecipeCategory(guiHelper)
+			new WorkstationRecipeCategory(
+				guiHelper
+			)
+		);
+
+		System.out.println(
+			"[VQ JEI] Catégorie Workstation enregistrée"
 		);
 	}
 
 	/*
 	 * ============================================================
-	 * RECETTES EXCLUSIVES
+	 * RECETTES
 	 * ============================================================
 	 */
 
@@ -96,18 +104,52 @@ public final class VQJeiPlugin implements IModPlugin {
 	public void registerRecipes(
 		IRecipeRegistration registration
 	) {
-		List<WorkstationJeiRecipe> recipes =
-			createRecipes();
+		ClientLevel level =
+			Minecraft.getInstance().level;
 
-		System.out.println(
-			"[VQ JEI] Enregistrement de "
-				+ recipes.size()
-				+ " recettes Workstation"
+		if (level == null) {
+			System.err.println(
+				"[VQ JEI] Impossible de lire les recettes : "
+					+ "ClientLevel absent"
+			);
+
+			return;
+		}
+
+		List<
+			VQWorkstationRecipes.WorkstationRecipe
+		> recipes =
+			new ArrayList<>(
+				level
+					.getRecipeManager()
+					.getAllRecipesFor(
+						VQWorkstationRecipes
+							.WORKSTATION_TYPE
+							.get()
+					)
+			);
+
+		/*
+		 * Ordre stable dans JEI.
+		 */
+		recipes.sort(
+			Comparator.comparing(
+				recipe ->
+					recipe
+						.getId()
+						.toString()
+			)
 		);
 
 		registration.addRecipes(
 			WORKSTATION_RECIPE_TYPE,
 			recipes
+		);
+
+		System.out.println(
+			"[VQ JEI] "
+				+ recipes.size()
+				+ " recettes Workstation chargées depuis le RecipeManager"
 		);
 	}
 
@@ -121,13 +163,6 @@ public final class VQJeiPlugin implements IModPlugin {
 	public void registerRecipeCatalysts(
 		IRecipeCatalystRegistration registration
 	) {
-		System.out.println(
-			"[VQ JEI] Enregistrement catalyst Workstation"
-		);
-
-		/*
-		 * La Workstation ouvre sa catégorie exclusive.
-		 */
 		registration.addRecipeCatalyst(
 			VanquishmixinModBlocks
 				.WORKSTATION_BLOCK
@@ -136,8 +171,8 @@ public final class VQJeiPlugin implements IModPlugin {
 		);
 
 		/*
-		 * Elle est également capable d'utiliser toutes
-		 * les recettes Crafting standard.
+		 * La Workstation reste aussi compatible avec les
+		 * recettes Crafting vanilla, mod, KubeJS et datapack.
 		 */
 		registration.addRecipeCatalyst(
 			VanquishmixinModBlocks
@@ -145,248 +180,27 @@ public final class VQJeiPlugin implements IModPlugin {
 				.get(),
 			RecipeTypes.CRAFTING
 		);
+
+		System.out.println(
+			"[VQ JEI] Catalyst Workstation enregistré"
+		);
 	}
 
 	/*
 	 * ============================================================
-	 * DÉFINITION DES RECETTES JEI
-	 * ============================================================
-	 *
-	 * Elles sont volontairement définies ici pour le moment.
-	 * Cette classe ne modifie absolument pas le moteur de craft.
-	 */
-
-	private static List<WorkstationJeiRecipe>
-	createRecipes() {
-		List<WorkstationJeiRecipe> recipes =
-			new ArrayList<>();
-
-		/*
-		 * Warrior Helmet
-		 *
-		 * A A A
-		 * A . A
-		 * . . .
-		 */
-		addRecipe(
-			recipes,
-			"warrior_helmet",
-			grid(
-				ANCIENT_METAL,
-				ANCIENT_METAL,
-				ANCIENT_METAL,
-
-				ANCIENT_METAL,
-				null,
-				ANCIENT_METAL,
-
-				null,
-				null,
-				null
-			),
-			"immersive_armors:warrior_helmet"
-		);
-
-		/*
-		 * Warrior Chestplate
-		 *
-		 * A . A
-		 * A A A
-		 * A A A
-		 */
-		addRecipe(
-			recipes,
-			"warrior_chestplate",
-			grid(
-				ANCIENT_METAL,
-				null,
-				ANCIENT_METAL,
-
-				ANCIENT_METAL,
-				ANCIENT_METAL,
-				ANCIENT_METAL,
-
-				ANCIENT_METAL,
-				ANCIENT_METAL,
-				ANCIENT_METAL
-			),
-			"immersive_armors:warrior_chestplate"
-		);
-
-		/*
-		 * Warrior Leggings
-		 *
-		 * A A A
-		 * A . A
-		 * A . A
-		 */
-		addRecipe(
-			recipes,
-			"warrior_leggings",
-			grid(
-				ANCIENT_METAL,
-				ANCIENT_METAL,
-				ANCIENT_METAL,
-
-				ANCIENT_METAL,
-				null,
-				ANCIENT_METAL,
-
-				ANCIENT_METAL,
-				null,
-				ANCIENT_METAL
-			),
-			"immersive_armors:warrior_leggings"
-		);
-
-		/*
-		 * Warrior Boots
-		 *
-		 * A . A
-		 * A . A
-		 * . . .
-		 */
-		addRecipe(
-			recipes,
-			"warrior_boots",
-			grid(
-				ANCIENT_METAL,
-				null,
-				ANCIENT_METAL,
-
-				ANCIENT_METAL,
-				null,
-				ANCIENT_METAL,
-
-				null,
-				null,
-				null
-			),
-			"immersive_armors:warrior_boots"
-		);
-
-		return List.copyOf(recipes);
-	}
-
-	private static void addRecipe(
-		List<WorkstationJeiRecipe> recipes,
-		String recipeName,
-		ItemStack[] inputs,
-		String outputId
-	) {
-		ItemStack output =
-			resolveStack(outputId);
-
-		if (output.isEmpty()) {
-			System.err.println(
-				"[VQ JEI] Recette ignorée, output introuvable : "
-					+ outputId
-			);
-
-			return;
-		}
-
-		ResourceLocation recipeId =
-			new ResourceLocation(
-				VanquishmixinMod.MODID,
-				"workstation/"
-					+ recipeName
-			);
-
-		recipes.add(
-			new WorkstationJeiRecipe(
-				recipeId,
-				inputs,
-				output
-			)
-		);
-	}
-
-	private static ItemStack[] grid(
-		String... itemIds
-	) {
-		if (itemIds.length != 9) {
-			throw new IllegalArgumentException(
-				"Une recette Workstation doit contenir exactement 9 cases."
-			);
-		}
-
-		ItemStack[] inputs =
-			new ItemStack[9];
-
-		for (
-			int slotId = 0;
-			slotId < 9;
-			slotId++
-		) {
-			inputs[slotId] =
-				resolveStack(itemIds[slotId]);
-		}
-
-		return inputs;
-	}
-
-	private static ItemStack resolveStack(
-		String itemId
-	) {
-		if (
-			itemId == null
-			|| itemId.isBlank()
-		) {
-			return ItemStack.EMPTY;
-		}
-
-		ResourceLocation location =
-			ResourceLocation.tryParse(itemId);
-
-		if (location == null) {
-			System.err.println(
-				"[VQ JEI] ResourceLocation invalide : "
-					+ itemId
-			);
-
-			return ItemStack.EMPTY;
-		}
-
-		Item item =
-			BuiltInRegistries.ITEM
-				.getOptional(location)
-				.orElse(Items.AIR);
-
-		if (item == Items.AIR) {
-			System.err.println(
-				"[VQ JEI] Item introuvable : "
-					+ itemId
-			);
-
-			return ItemStack.EMPTY;
-		}
-
-		return new ItemStack(item);
-	}
-
-	/*
-	 * ============================================================
-	 * MODÈLE INTERNE D'UNE RECETTE JEI
-	 * ============================================================
-	 */
-
-	private record WorkstationJeiRecipe(
-		ResourceLocation id,
-		ItemStack[] inputs,
-		ItemStack output
-	) {
-	}
-
-	/*
-	 * ============================================================
-	 * CATÉGORIE GRAPHIQUE JEI
+	 * CATÉGORIE GRAPHIQUE
 	 * ============================================================
 	 */
 
 	private static final class
 	WorkstationRecipeCategory
-	implements IRecipeCategory<WorkstationJeiRecipe> {
+	implements IRecipeCategory<
+		VQWorkstationRecipes.WorkstationRecipe
+	> {
+
+		private static final int GRID_WIDTH = 3;
+		private static final int GRID_HEIGHT = 3;
+		private static final int GRID_SIZE = 9;
 
 		private static final int WIDTH = 128;
 		private static final int HEIGHT = 54;
@@ -409,8 +223,9 @@ public final class VQJeiPlugin implements IModPlugin {
 		}
 
 		@Override
-		public RecipeType<WorkstationJeiRecipe>
-		getRecipeType() {
+		public RecipeType<
+			VQWorkstationRecipes.WorkstationRecipe
+		> getRecipeType() {
 			return WORKSTATION_RECIPE_TYPE;
 		}
 
@@ -439,67 +254,173 @@ public final class VQJeiPlugin implements IModPlugin {
 		@Override
 		public void setRecipe(
 			IRecipeLayoutBuilder builder,
-			WorkstationJeiRecipe recipe,
+			VQWorkstationRecipes.WorkstationRecipe recipe,
 			IFocusGroup focuses
 		) {
-			ItemStack[] inputs =
-				recipe.inputs();
-
-			/*
-			 * Grille 3×3.
-			 */
-			for (
-				int slotId = 0;
-				slotId < 9;
-				slotId++
+			if (
+				recipe instanceof
+				VQWorkstationRecipes
+					.WorkstationShapedRecipe shapedRecipe
 			) {
-				int column =
-					slotId % 3;
-
-				int row =
-					slotId / 3;
-
-				int slotX =
-					1 + column * 18;
-
-				int slotY =
-					1 + row * 18;
-
-				IRecipeSlotBuilder slotBuilder =
-					builder
-						.addInputSlot(
-							slotX,
-							slotY
-						)
-						.setStandardSlotBackground();
-
-				ItemStack ingredient =
-					inputs[slotId];
-
-				if (!ingredient.isEmpty()) {
-					slotBuilder.addItemStack(
-						ingredient
-					);
-				}
+				addShapedInputs(
+					builder,
+					shapedRecipe
+				);
+			} else {
+				addShapelessInputs(
+					builder,
+					recipe
+				);
 			}
 
-			/*
-			 * Résultat avec le grand cadre vanilla.
-			 */
+			ItemStack output =
+				recipe
+					.getResultItem(
+						getRegistryAccess()
+					)
+					.copy();
+
 			builder
 				.addOutputSlot(
 					106,
 					19
 				)
 				.setOutputSlotBackground()
-				.addItemStack(
-					recipe.output()
+				.addItemStack(output);
+		}
+
+		private static void addShapedInputs(
+			IRecipeLayoutBuilder builder,
+			VQWorkstationRecipes
+				.WorkstationShapedRecipe recipe
+		) {
+			int recipeWidth =
+				recipe.getWidth();
+
+			int recipeHeight =
+				recipe.getHeight();
+
+			NonNullList<Ingredient> ingredients =
+				recipe.getIngredients();
+
+			for (
+				int slotId = 0;
+				slotId < GRID_SIZE;
+				slotId++
+			) {
+				int column =
+					slotId % GRID_WIDTH;
+
+				int row =
+					slotId / GRID_WIDTH;
+
+				Ingredient ingredient =
+					Ingredient.EMPTY;
+
+				if (
+					column < recipeWidth
+					&& row < recipeHeight
+				) {
+					int ingredientIndex =
+						row * recipeWidth
+							+ column;
+
+					if (
+						ingredientIndex
+							< ingredients.size()
+					) {
+						ingredient =
+							ingredients.get(
+								ingredientIndex
+							);
+					}
+				}
+
+				addInputSlot(
+					builder,
+					slotId,
+					ingredient
 				);
+			}
+		}
+
+		private static void addShapelessInputs(
+			IRecipeLayoutBuilder builder,
+			VQWorkstationRecipes.WorkstationRecipe recipe
+		) {
+			builder.setShapeless();
+
+			NonNullList<Ingredient> ingredients =
+				recipe.getIngredients();
+
+			for (
+				int slotId = 0;
+				slotId < GRID_SIZE;
+				slotId++
+			) {
+				Ingredient ingredient =
+					slotId < ingredients.size()
+						? ingredients.get(slotId)
+						: Ingredient.EMPTY;
+
+				addInputSlot(
+					builder,
+					slotId,
+					ingredient
+				);
+			}
+		}
+
+		private static void addInputSlot(
+			IRecipeLayoutBuilder builder,
+			int slotId,
+			Ingredient ingredient
+		) {
+			int column =
+				slotId % GRID_WIDTH;
+
+			int row =
+				slotId / GRID_WIDTH;
+
+			IRecipeSlotBuilder slotBuilder =
+				builder
+					.addInputSlot(
+						1 + column * 18,
+						1 + row * 18
+					)
+					.setStandardSlotBackground();
+
+			/*
+			 * Un Ingredient peut représenter plusieurs items,
+			 * par exemple un tag Forge.
+			 *
+			 * JEI les fera défiler dans le même slot.
+			 */
+			for (
+				ItemStack possibleStack
+					: ingredient.getItems()
+			) {
+				if (!possibleStack.isEmpty()) {
+					slotBuilder.addItemStack(
+						possibleStack
+					);
+				}
+			}
+		}
+
+		private static RegistryAccess
+		getRegistryAccess() {
+			ClientLevel level =
+				Minecraft.getInstance().level;
+
+			return level != null
+				? level.registryAccess()
+				: RegistryAccess.EMPTY;
 		}
 
 		@Override
 		public void draw(
-			WorkstationJeiRecipe recipe,
+			VQWorkstationRecipes.WorkstationRecipe recipe,
 			IRecipeSlotsView recipeSlotsView,
 			GuiGraphics guiGraphics,
 			double mouseX,
@@ -514,9 +435,9 @@ public final class VQJeiPlugin implements IModPlugin {
 
 		@Override
 		public ResourceLocation getRegistryName(
-			WorkstationJeiRecipe recipe
+			VQWorkstationRecipes.WorkstationRecipe recipe
 		) {
-			return recipe.id();
+			return recipe.getId();
 		}
 	}
 }

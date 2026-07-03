@@ -77,6 +77,42 @@
           "src/main/java/vanquishmixin/procedures/VQTakeCraftingOutputProcedure.java"
         ]
       }
+    },
+    {
+      "name": "VQJeiPlugin",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "vq_jei_plugin",
+      "metadata": {
+        "files": [
+          "src/main/java/vanquishmixin/VQJeiPlugin.java"
+        ]
+      }
+    },
+    {
+      "name": "AberrationEffect",
+      "type": "potioneffect",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "aberration_effect",
+      "metadata": {
+        "files": [
+          "src/main/java/vanquishmixin/potion/AberrationEffectMobEffect.java"
+        ]
+      }
+    },
+    {
+      "name": "VQWorkstationRecipes",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "vq_workstation_recipes",
+      "metadata": {
+        "files": [
+          "src/main/java/vanquishmixin/VQWorkstationRecipes.java"
+        ]
+      }
     }
   ],
   "variable_elements": [],
@@ -86,7 +122,8 @@
   "language_map": {
     "en_us": {
       "gui.vanquishmixin.workstation.label_crafting": "Crafting",
-      "block.vanquishmixin.workstation_block": "Workstation"
+      "block.vanquishmixin.workstation_block": "Workstation",
+      "effect.vanquishmixin.aberration_effect": "Aberration"
     }
   },
   "metadata": {
@@ -94,6 +131,7 @@
       "src/main/java/vanquishmixin/init/VanquishmixinModMenus.java",
       "src/main/java/vanquishmixin/init/VanquishmixinModScreens.java",
       "src/main/java/vanquishmixin/network/MenuStateUpdateMessage.java",
+      "src/main/java/vanquishmixin/init/VanquishmixinModMobEffects.java",
       "src/main/java/vanquishmixin/init/VanquishmixinModBlocks.java",
       "src/main/java/vanquishmixin/init/VanquishmixinModItems.java",
       "src/main/java/vanquishmixin/VanquishmixinMod.java",
@@ -111,6 +149,7 @@
     "modName": "VanquishMixin",
     "version": "1.0.0",
     "author": "synx",
+    "websiteURL": "https://curseforge.com",
     "license": "Not specified",
     "serverSideOnly": false,
     "requiredMods": [
@@ -121,6 +160,7 @@
     "dependants": [],
     "mcreatorDependencies": [],
     "currentGenerator": "forge-1.20.1",
+    "credits": "Addon for the Vanquish Modpack ",
     "modElementsPackage": "vanquishmixin"
   },
   "mcreatorVersion": 202600114619
