@@ -33,7 +33,7 @@
     {
       "name": "VQAdvancedCrafting",
       "type": "code",
-      "compiles": true,
+      "compiles": false,
       "locked_code": true,
       "registry_name": "vq_advanced_crafting",
       "metadata": {
@@ -63,7 +63,7 @@
     {
       "name": "VQTakeCraftingOutput",
       "type": "procedure",
-      "compiles": true,
+      "compiles": false,
       "locked_code": false,
       "registry_name": "vq_take_crafting_output",
       "metadata": {
@@ -89,6 +89,30 @@
           "src/main/java/vanquishmixin/VQJeiPlugin.java"
         ]
       }
+    },
+    {
+      "name": "AberrationEffect",
+      "type": "potioneffect",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "aberration_effect",
+      "metadata": {
+        "files": [
+          "src/main/java/vanquishmixin/potion/AberrationEffectMobEffect.java"
+        ]
+      }
+    },
+    {
+      "name": "VQWorkstationRecipes",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "vq_workstation_recipes",
+      "metadata": {
+        "files": [
+          "src/main/java/vanquishmixin/VQWorkstationRecipes.java"
+        ]
+      }
     }
   ],
   "variable_elements": [],
@@ -98,7 +122,8 @@
   "language_map": {
     "en_us": {
       "gui.vanquishmixin.workstation.label_crafting": "Crafting",
-      "block.vanquishmixin.workstation_block": "Workstation"
+      "block.vanquishmixin.workstation_block": "Workstation",
+      "effect.vanquishmixin.aberration_effect": "Aberration"
     }
   },
   "metadata": {
@@ -106,6 +131,7 @@
       "src/main/java/vanquishmixin/init/VanquishmixinModMenus.java",
       "src/main/java/vanquishmixin/init/VanquishmixinModScreens.java",
       "src/main/java/vanquishmixin/network/MenuStateUpdateMessage.java",
+      "src/main/java/vanquishmixin/init/VanquishmixinModMobEffects.java",
       "src/main/java/vanquishmixin/init/VanquishmixinModBlocks.java",
       "src/main/java/vanquishmixin/init/VanquishmixinModItems.java",
       "src/main/java/vanquishmixin/VanquishmixinMod.java",

@@ -33,7 +33,7 @@
     {
       "name": "VQAdvancedCrafting",
       "type": "code",
-      "compiles": false,
+      "compiles": true,
       "locked_code": true,
       "registry_name": "vq_advanced_crafting",
       "metadata": {
@@ -63,7 +63,7 @@
     {
       "name": "VQTakeCraftingOutput",
       "type": "procedure",
-      "compiles": false,
+      "compiles": true,
       "locked_code": false,
       "registry_name": "vq_take_crafting_output",
       "metadata": {

@@ -242,22 +242,62 @@ public final class VQAdvancedCrafting {
 	private VQAdvancedCrafting() {
 	}
 
-	/*
-	 * ============================================================
-	 * COMPATIBILITÉ AVEC LES PROCÉDURES MCREATOR
-	 * ============================================================
-	 */
+/*
+ * ============================================================
+ * COMPATIBILITÉ AVEC LES PROCÉDURES MCREATOR
+ * ============================================================
+ */
 
-	public static void updateOutput(Entity entity) {
-		if (
-			entity instanceof ServerPlayer player
-			&& player.containerMenu instanceof WorkstationMenu menu
-		) {
-			updateOutput(menu);
-		}
+public static void updateOutput(Entity entity) {
+	if (
+		entity instanceof ServerPlayer player
+		&& player.containerMenu instanceof WorkstationMenu menu
+	) {
+		updateOutput(menu);
+	}
+}
+
+public static void takeOutput(Entity entity) {
+	if (
+		entity instanceof ServerPlayer player
+		&& player.containerMenu instanceof WorkstationMenu menu
+	) {
+		takeOutput(menu);
+	}
+}
+
+/*
+ * ============================================================
+ * API APPELÉE DIRECTEMENT PAR WORKSTATIONMENU
+ * ============================================================
+ */
+
+/**
+ * Recalcule le résultat sans consommer les ingrédients.
+ */
+public static void updateOutput(
+	WorkstationMenu menu
+) {
+	if (!isServerMenu(menu)) {
+		return;
 	}
 
-	public static void takeOutput(
+	if (!BUSY_MENUS.add(menu)) {
+		return;
+	}
+
+	try {
+		refreshOutput(menu);
+	} finally {
+		BUSY_MENUS.remove(menu);
+	}
+}
+
+/**
+ * Consomme les ingrédients lorsque le joueur récupère
+ * le résultat du slot 9.
+ */
+public static void takeOutput(
 	WorkstationMenu menu
 ) {
 	if (!isServerMenu(menu)) {
@@ -273,7 +313,7 @@ public final class VQAdvancedCrafting {
 			createCraftingGrid(menu);
 
 		/*
-		 * 1. Nouvelles recettes data-driven Workstation.
+		 * 1. Recettes data-driven Workstation.
 		 */
 		Optional<
 			VQWorkstationRecipes.WorkstationRecipe
@@ -299,7 +339,7 @@ public final class VQAdvancedCrafting {
 		 * 2. Anciennes recettes hardcodées.
 		 *
 		 * Conservées temporairement pour ne pas casser
-		 * les quatre recettes Warrior.
+		 * les recettes Warrior pendant la migration.
 		 */
 		SpecialRecipe specialRecipe =
 			findSpecialRecipe(menu);
@@ -344,121 +384,30 @@ public final class VQAdvancedCrafting {
 	}
 }
 
-	/*
-	 * ============================================================
-	 * API APPELÉE DIRECTEMENT PAR WORKSTATIONMENU
-	 * ============================================================
-	 */
-
-	/**
-	 * Recalcule le résultat sans consommer les ingrédients.
-	 */
-	public static void updateOutput(WorkstationMenu menu) {
-		if (!isServerMenu(menu)) {
-			return;
-		}
-
-		if (!BUSY_MENUS.add(menu)) {
-			return;
-		}
-
-		try {
-			refreshOutput(menu);
-		} finally {
-			BUSY_MENUS.remove(menu);
-		}
+/**
+ * Supprime le résultat virtuel avant la fermeture du GUI.
+ *
+ * Cela évite que MCreator rende gratuitement l'objet
+ * du slot 9 au joueur.
+ */
+public static void clearOutput(
+	WorkstationMenu menu
+) {
+	if (!isServerMenu(menu)) {
+		return;
 	}
 
-	/**
-	 * Consomme les ingrédients lorsque le joueur récupère
-	 * le résultat du slot 9.
-	 */
-	public static void takeOutput(WorkstationMenu menu) {
-		if (!isServerMenu(menu)) {
-			return;
-		}
-
-		if (!BUSY_MENUS.add(menu)) {
-			return;
-		}
-
-		try {
-			/*
-			 * Priorité absolue aux recettes spéciales Vanquish.
-			 */
-			SpecialRecipe specialRecipe =
-				findSpecialRecipe(menu);
-
-			if (specialRecipe != null) {
-				consumeSpecialIngredients(
-					menu,
-					specialRecipe
-				);
-
-				refreshOutput(menu);
-				menu.broadcastChanges();
-				return;
-			}
-
-			/*
-			 * Sinon, recherche d'une recette standard :
-			 *
-			 * - Vanilla
-			 * - Mods
-			 * - KubeJS
-			 * - Datapacks
-			 */
-			TransientCraftingContainer craftingGrid =
-				createCraftingGrid(menu);
-
-			Optional<CraftingRecipe> standardRecipe =
-				findStandardRecipe(
-					menu,
-					craftingGrid
-				);
-
-			if (standardRecipe.isEmpty()) {
-				clearOutputInternal(menu);
-				menu.broadcastChanges();
-				return;
-			}
-
-			consumeStandardIngredients(
-				menu,
-				craftingGrid,
-				standardRecipe.get()
-			);
-
-			refreshOutput(menu);
-			menu.broadcastChanges();
-
-		} finally {
-			BUSY_MENUS.remove(menu);
-		}
+	if (!BUSY_MENUS.add(menu)) {
+		return;
 	}
 
-	/**
-	 * Supprime le résultat virtuel avant la fermeture du GUI.
-	 *
-	 * Cela évite que MCreator rende gratuitement l'objet
-	 * du slot 9 au joueur.
-	 */
-	public static void clearOutput(WorkstationMenu menu) {
-		if (!isServerMenu(menu)) {
-			return;
-		}
-
-		if (!BUSY_MENUS.add(menu)) {
-			return;
-		}
-
-		try {
-			clearOutputInternal(menu);
-			menu.broadcastChanges();
-		} finally {
-			BUSY_MENUS.remove(menu);
-		}
+	try {
+		clearOutputInternal(menu);
+		menu.broadcastChanges();
+	} finally {
+		BUSY_MENUS.remove(menu);
 	}
+}
 
 	/*
 	 * ============================================================
