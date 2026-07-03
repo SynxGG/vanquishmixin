@@ -1,0 +1,15 @@
+{
+  "type": "vanquishmixin:workstation_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:coarse_dirt"
+    },
+    {
+      "item": "minecraft:gravel"
+    }
+  ],
+  "result": {
+    "item": "minecraft:rooted_dirt",
+    "count": 1
+  }
+}

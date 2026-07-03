@@ -1,0 +1,15 @@
+{
+  "type": "vanquishmixin:workstation_shaped",
+  "pattern": [
+    "D"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:dirt"
+    }
+  },
+  "result": {
+    "item": "minecraft:coarse_dirt",
+    "count": 1
+  }
+}

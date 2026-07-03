@@ -51,6 +51,7 @@ public class VanquishmixinMod {
 		VanquishmixinModMobEffects.REGISTRY.register(bus);
 		VanquishmixinModMenus.REGISTRY.register(bus);
 		// Start of user code block mod init
+		VQWorkstationRecipes.register(bus);
 		// End of user code block mod init
 	}
 

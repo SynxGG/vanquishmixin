@@ -257,14 +257,92 @@ public final class VQAdvancedCrafting {
 		}
 	}
 
-	public static void takeOutput(Entity entity) {
-		if (
-			entity instanceof ServerPlayer player
-			&& player.containerMenu instanceof WorkstationMenu menu
-		) {
-			takeOutput(menu);
-		}
+	public static void takeOutput(
+	WorkstationMenu menu
+) {
+	if (!isServerMenu(menu)) {
+		return;
 	}
+
+	if (!BUSY_MENUS.add(menu)) {
+		return;
+	}
+
+	try {
+		TransientCraftingContainer craftingGrid =
+			createCraftingGrid(menu);
+
+		/*
+		 * 1. Nouvelles recettes data-driven Workstation.
+		 */
+		Optional<
+			VQWorkstationRecipes.WorkstationRecipe
+		> workstationRecipe =
+			findWorkstationRecipe(
+				menu,
+				craftingGrid
+			);
+
+		if (workstationRecipe.isPresent()) {
+			consumeStandardIngredients(
+				menu,
+				craftingGrid,
+				workstationRecipe.get()
+			);
+
+			refreshOutput(menu);
+			menu.broadcastChanges();
+			return;
+		}
+
+		/*
+		 * 2. Anciennes recettes hardcodées.
+		 *
+		 * Conservées temporairement pour ne pas casser
+		 * les quatre recettes Warrior.
+		 */
+		SpecialRecipe specialRecipe =
+			findSpecialRecipe(menu);
+
+		if (specialRecipe != null) {
+			consumeSpecialIngredients(
+				menu,
+				specialRecipe
+			);
+
+			refreshOutput(menu);
+			menu.broadcastChanges();
+			return;
+		}
+
+		/*
+		 * 3. Recettes Crafting standards :
+		 * Vanilla, mods, KubeJS et datapacks.
+		 */
+		Optional<CraftingRecipe> standardRecipe =
+			findStandardRecipe(
+				menu,
+				craftingGrid
+			);
+
+		if (standardRecipe.isEmpty()) {
+			clearOutputInternal(menu);
+			menu.broadcastChanges();
+			return;
+		}
+
+		consumeStandardIngredients(
+			menu,
+			craftingGrid,
+			standardRecipe.get()
+		);
+
+		refreshOutput(menu);
+		menu.broadcastChanges();
+	} finally {
+		BUSY_MENUS.remove(menu);
+	}
+}
 
 	/*
 	 * ============================================================
@@ -422,48 +500,81 @@ public final class VQAdvancedCrafting {
 	}
 
 	private static ItemStack findExpectedOutput(
-		WorkstationMenu menu
-	) {
-		/*
-		 * 1. Recettes exclusives Workstation.
-		 */
-		SpecialRecipe specialRecipe =
-			findSpecialRecipe(menu);
+	WorkstationMenu menu
+) {
+	TransientCraftingContainer craftingGrid =
+		createCraftingGrid(menu);
 
-		if (specialRecipe != null) {
-			return createSpecialResult(
-				specialRecipe
-			);
-		}
+	/*
+	 * 1. Recettes JSON Workstation.
+	 */
+	Optional<
+		VQWorkstationRecipes.WorkstationRecipe
+	> workstationRecipe =
+		findWorkstationRecipe(
+			menu,
+			craftingGrid
+		);
 
-		/*
-		 * 2. Toutes les recettes normales 3×3.
-		 */
-		TransientCraftingContainer craftingGrid =
-			createCraftingGrid(menu);
-
-		Optional<CraftingRecipe> standardRecipe =
-			findStandardRecipe(
-				menu,
-				craftingGrid
-			);
-
-		if (standardRecipe.isEmpty()) {
-			return ItemStack.EMPTY;
-		}
-
+	if (workstationRecipe.isPresent()) {
 		ItemStack result =
-			standardRecipe.get().assemble(
+			workstationRecipe
+				.get()
+				.assemble(
+					craftingGrid,
+					menu.world.registryAccess()
+				);
+
+		if (
+			result != null
+			&& !result.isEmpty()
+		) {
+			return result.copy();
+		}
+	}
+
+	/*
+	 * 2. Recettes Warrior hardcodées temporaires.
+	 */
+	SpecialRecipe specialRecipe =
+		findSpecialRecipe(menu);
+
+	if (specialRecipe != null) {
+		return createSpecialResult(
+			specialRecipe
+		);
+	}
+
+	/*
+	 * 3. Recettes Crafting normales.
+	 */
+	Optional<CraftingRecipe> standardRecipe =
+		findStandardRecipe(
+			menu,
+			craftingGrid
+		);
+
+	if (standardRecipe.isEmpty()) {
+		return ItemStack.EMPTY;
+	}
+
+	ItemStack result =
+		standardRecipe
+			.get()
+			.assemble(
 				craftingGrid,
 				menu.world.registryAccess()
 			);
 
-		if (result == null || result.isEmpty()) {
-			return ItemStack.EMPTY;
-		}
-
-		return result.copy();
+	if (
+		result == null
+		|| result.isEmpty()
+	) {
+		return ItemStack.EMPTY;
 	}
+
+	return result.copy();
+}
 
 	/*
 	 * ============================================================
@@ -506,7 +617,23 @@ public final class VQAdvancedCrafting {
 			items
 		);
 	}
-
+	
+private static Optional<
+	VQWorkstationRecipes.WorkstationRecipe
+> findWorkstationRecipe(
+	WorkstationMenu menu,
+	TransientCraftingContainer craftingGrid
+) {
+	return menu.world
+		.getRecipeManager()
+		.getRecipeFor(
+			VQWorkstationRecipes
+				.WORKSTATION_TYPE
+				.get(),
+			craftingGrid,
+			menu.world
+		);
+}
 	private static Optional<CraftingRecipe> findStandardRecipe(
 		WorkstationMenu menu,
 		TransientCraftingContainer craftingGrid
