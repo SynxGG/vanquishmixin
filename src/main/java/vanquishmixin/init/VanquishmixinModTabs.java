@@ -22,6 +22,8 @@ public class VanquishmixinModTabs {
 	public static void buildTabContentsVanilla(BuildCreativeModeTabContentsEvent tabData) {
 		if (tabData.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
 			tabData.accept(VanquishmixinModBlocks.WORKSTATION_BLOCK.get().asItem());
+		} else if (tabData.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+			tabData.accept(VanquishmixinModItems.ICHOR.get());
 		}
 	}
 }

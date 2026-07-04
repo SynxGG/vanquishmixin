@@ -3,6 +3,8 @@
  */
 package vanquishmixin.init;
 
+import vanquishmixin.item.IchorItem;
+
 import vanquishmixin.VanquishmixinMod;
 
 import net.minecraftforge.registries.RegistryObject;
@@ -16,8 +18,10 @@ import net.minecraft.world.item.BlockItem;
 public class VanquishmixinModItems {
 	public static final DeferredRegister<Item> REGISTRY = DeferredRegister.create(ForgeRegistries.ITEMS, VanquishmixinMod.MODID);
 	public static final RegistryObject<Item> WORKSTATION_BLOCK;
+	public static final RegistryObject<Item> ICHOR;
 	static {
 		WORKSTATION_BLOCK = block(VanquishmixinModBlocks.WORKSTATION_BLOCK, new Item.Properties().fireResistant());
+		ICHOR = REGISTRY.register("ichor", IchorItem::new);
 	}
 
 	// Start of user code block custom items

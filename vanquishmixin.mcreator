@@ -113,6 +113,19 @@
           "src/main/java/vanquishmixin/VQWorkstationRecipes.java"
         ]
       }
+    },
+    {
+      "name": "Ichor",
+      "type": "item",
+      "compiles": true,
+      "locked_code": false,
+      "registry_name": "ichor",
+      "metadata": {
+        "files": [
+          "src/main/java/vanquishmixin/item/IchorItem.java",
+          "src/main/resources/assets/vanquishmixin/models/item/ichor.json"
+        ]
+      }
     }
   ],
   "variable_elements": [],
@@ -123,7 +136,8 @@
     "en_us": {
       "gui.vanquishmixin.workstation.label_crafting": "Crafting",
       "block.vanquishmixin.workstation_block": "Workstation",
-      "effect.vanquishmixin.aberration_effect": "Aberration"
+      "effect.vanquishmixin.aberration_effect": "Aberration",
+      "item.vanquishmixin.ichor": "Ichor"
     }
   },
   "metadata": {
