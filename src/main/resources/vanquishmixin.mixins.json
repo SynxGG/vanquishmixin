@@ -4,6 +4,10 @@
   "package": "vanquishmixin.mixin",
   "compatibilityLevel": "JAVA_17",
   "refmap": "vanquishmixin.refmap.json",
+  "mixins": [
+    "KnowledgeEffectMixin",
+    "AttributeEventsMixin"
+  ],
   "client": [
     "client.ForgeHooksClientMixin"
   ],

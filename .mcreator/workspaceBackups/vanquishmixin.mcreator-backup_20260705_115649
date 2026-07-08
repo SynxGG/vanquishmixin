@@ -115,39 +115,29 @@
       }
     },
     {
-      "name": "IchorOre",
-      "type": "block",
+      "name": "Ichor",
+      "type": "item",
       "compiles": true,
       "locked_code": false,
-      "registry_name": "ichor_ore",
+      "registry_name": "ichor",
       "metadata": {
         "files": [
-          "src/main/resources/data/vanquishmixin/worldgen/placed_feature/ichor_ore.json",
-          "src/main/resources/data/vanquishmixin/forge/biome_modifier/ichor_ore_biome_modifier.json",
-          "src/main/resources/data/vanquishmixin/loot_tables/blocks/ichor_ore.json",
-          "src/main/resources/assets/vanquishmixin/blockstates/ichor_ore.json",
-          "src/main/resources/data/vanquishmixin/worldgen/configured_feature/ichor_ore.json",
-          "src/main/java/vanquishmixin/block/IchorOreBlock.java",
-          "src/main/resources/assets/vanquishmixin/models/block/ichor_ore.json",
-          "src/main/resources/assets/vanquishmixin/models/item/ichor_ore.json"
+          "src/main/java/vanquishmixin/item/IchorItem.java",
+          "src/main/resources/assets/vanquishmixin/models/item/ichor.json"
         ]
       }
     }
   ],
   "variable_elements": [],
   "sound_elements": [],
-  "tag_elements": {
-    "BLOCKS:minecraft:mineable/pickaxe": [
-      "~CUSTOM:IchorOre"
-    ]
-  },
+  "tag_elements": {},
   "tab_element_order": {},
   "language_map": {
     "en_us": {
       "gui.vanquishmixin.workstation.label_crafting": "Crafting",
       "block.vanquishmixin.workstation_block": "Workstation",
       "effect.vanquishmixin.aberration_effect": "Aberration",
-      "block.vanquishmixin.ichor_ore": "Ichor Ore"
+      "item.vanquishmixin.ichor": "Ichor"
     }
   },
   "metadata": {
